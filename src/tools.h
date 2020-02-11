@@ -25,7 +25,7 @@ float rsqrt(float number)
   x2 = number * 0.5F;
   y  = number;
   i  = * ( long * ) &y;                       // evil floating point bit level hacking
-  i  = 0x5f3759df - ( i >> 1 );               // what the fuck? 
+  i  = 0x5f3759df - ( i >> 1 );               // what the fuck?
   y  = * ( float * ) &i;
   y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
   y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
@@ -72,13 +72,26 @@ void getPixel(int x, int y, unsigned char *image, unsigned char *pixel)
   pixel[2] = (p & 0b11111) << 3;
 }
 
+// int pixelMap(int x, int y)
+// {
+//   if(x < 0 || x >= 40 || y < 0 || y >= 30)
+//     return -1;
+//   x = 39 - x;
+//   int panel = 1 - (x / 20) + (y / 15) * 2;
+//   int row = (y % 15);
+//   int col = ((row & 1) == 0) ? 19 - (x % 20) : x % 20;
+//   return panel * 300 + row * 20 + col;
+// }
+
+/**
+pixelMap for a panelized installation of two 32x8 matrices. One on top of the other.
+**/
 int pixelMap(int x, int y)
 {
-  if(x < 0 || x >= 40 || y < 0 || y >= 30) 
+  if(x < 0 || x >= 32 || y < 0 || y >= 16)
     return -1;
-  x = 39 - x;
-  int panel = 1 - (x / 20) + (y / 15) * 2;
-  int row = (y % 15);
-  int col = ((row & 1) == 0) ? 19 - (x % 20) : x % 20;
-  return panel * 300 + row * 20 + col;
+  int panel = y>8 ? 1 : 0;
+  int row = (y % 8);
+  int col = x % 32;
+  return panel * 256 + col * 8 + row;
 }
